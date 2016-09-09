@@ -10,7 +10,7 @@ RSpec.describe 'Iyzipay' do
     @options.base_url = 'https://sandbox-api.iyzipay.com'
   end
 
-  it 'should retrieve bin number' do
+  it 'should retrieve installment' do
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
