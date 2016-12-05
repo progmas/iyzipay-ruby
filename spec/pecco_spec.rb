@@ -91,9 +91,9 @@ RSpec.describe 'Iyzipay' do
         conversationId: '123456789',
         token: 'token',
     }
-    threeds_payment = Iyzipay::Model::PeccoPayment.new.create(request, @options)
+    pecco_payment = Iyzipay::Model::PeccoPayment.new.create(request, @options)
     begin
-      $stderr.puts threeds_payment.inspect
+      $stderr.puts pecco_payment.inspect
     rescue
       $stderr.puts 'oops'
       raise
