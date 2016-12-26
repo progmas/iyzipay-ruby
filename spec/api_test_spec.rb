@@ -11,9 +11,9 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should test api' do
-    apiTest = Iyzipay::Model::ApiTest.new.retrieve(@options)
+    api_test = Iyzipay::Model::ApiTest.new.retrieve(@options)
     begin
-      $stderr.puts apiTest.inspect
+      $stderr.puts api_test.inspect
     rescue
       $stderr.puts 'oops'
       raise

@@ -48,7 +48,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Collectibles',
         category2: 'Accessories',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '0.3',
+        price: '0.3'
     }
     item2 = {
         id: 'BI102',
@@ -56,7 +56,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Game',
         category2: 'Online Game Items',
         itemType: Iyzipay::Model::BasketItemType::VIRTUAL,
-        price: '0.5',
+        price: '0.5'
     }
     item3 = {
         id: 'BI103',
@@ -64,7 +64,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Electronics',
         category2: 'Usb / Cable',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '0.2',
+        price: '0.2'
     }
     request = {
         locale: Iyzipay::Model::Locale::TR,
@@ -194,7 +194,7 @@ RSpec.describe 'Iyzipay' do
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
         paymentId: '1',
-        conversationData: 'conversation data',
+        conversationData: 'conversation data'
     }
     threeds_payment = Iyzipay::Model::ThreedsPayment.new.create(request, @options)
     begin
@@ -210,7 +210,7 @@ RSpec.describe 'Iyzipay' do
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
         paymentId: '9',
-        paymentConversationId: '123456789',
+        paymentConversationId: '123456789'
     }
     threeds_payment = Iyzipay::Model::ThreedsPayment.new.retrieve(request, @options)
     begin

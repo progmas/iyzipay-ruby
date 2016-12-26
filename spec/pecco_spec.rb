@@ -40,7 +40,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Collectibles',
         category2: 'Accessories',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '30000',
+        price: '30000'
     }
     item2 = {
         id: 'BI102',
@@ -48,7 +48,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Game',
         category2: 'Online Game Items',
         itemType: Iyzipay::Model::BasketItemType::VIRTUAL,
-        price: '50000',
+        price: '50000'
     }
     item3 = {
         id: 'BI103',
@@ -56,7 +56,7 @@ RSpec.describe 'Iyzipay' do
         category1: 'Electronics',
         category2: 'Usb / Cable',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '20000',
+        price: '20000'
     }
     request = {
         locale: Iyzipay::Model::Locale::TR,
@@ -89,7 +89,7 @@ RSpec.describe 'Iyzipay' do
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        token: 'token',
+        token: 'token'
     }
     pecco_payment = Iyzipay::Model::PeccoPayment.new.create(request, @options)
     begin

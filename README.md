@@ -33,7 +33,7 @@ before :all do
   @options.base_url = 'https://sandbox-api.iyzipay.com'
 end
 
-it 'should create payment with physical and virtual item for listing or subscription' do
+it 'should create payment' do
     payment_card = {
         cardHolderName: 'John Doe',
         cardNumber: '5528790000000008',
