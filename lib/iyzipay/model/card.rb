@@ -6,7 +6,7 @@ module Iyzipay
         pki_string = to_pki_string_create(request)
         HttpClient.post("#{options.base_url}/cardstorage/card", get_http_header(pki_string, options), request.to_json)
       end
-      
+
       def delete(request = {}, options)
         pki_string = to_pki_string_delete(request)
         HttpClient.delete("#{options.base_url}/cardstorage/card", get_http_header(pki_string, options), request.to_json)
@@ -22,7 +22,7 @@ module Iyzipay
             append(:card, CardInformation.to_pki_string(request[:card])).
             get_request_string
       end
-      
+
       def to_pki_string_delete(request)
         PkiBuilder.new.
             append(:locale, request[:locale]).
