@@ -1,10 +1,9 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'iyzipay/version'
 
 Gem::Specification.new do |s|
   s.name                  = 'iyzipay'
-  s.version               = Iyzipay::VERSION
+  s.version               = '1.0.34'
   s.platform              = Gem::Platform::RUBY
   s.required_ruby_version = '>= 1.9.3'
   s.summary               = %q{iyzipay api ruby client}
