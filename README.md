@@ -71,7 +71,7 @@ it 'should create payment' do
         category1: 'Collectibles',
         category2: 'Accessories',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '0.3',
+        price: '0.3'
     }
     item2 = {
         id: 'BI102',
@@ -79,7 +79,7 @@ it 'should create payment' do
         category1: 'Game',
         category2: 'Online Game Items',
         itemType: Iyzipay::Model::BasketItemType::VIRTUAL,
-        price: '0.5',
+        price: '0.5'
     }
     item3 = {
         id: 'BI103',
@@ -87,7 +87,7 @@ it 'should create payment' do
         category1: 'Electronics',
         category2: 'Usb / Cable',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
-        price: '0.2',
+        price: '0.2'
     }
     request = {
         locale: Iyzipay::Model::Locale::TR,
