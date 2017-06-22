@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
@@ -77,6 +78,12 @@ RSpec.describe 'Iyzipay' do
 
     begin
       $stdout.puts checkout_form_initialize.inspect
+      checkout_form_initialize = JSON.parse(checkout_form_initialize)
+      expect(checkout_form_initialize['status']).to eq('success')
+      expect(checkout_form_initialize['locale']).to eq('tr')
+      expect(checkout_form_initialize['systemTime']).not_to be_nil
+      expect(checkout_form_initialize['token']).not_to be_nil
+      expect(checkout_form_initialize['checkoutFormContent']).not_to be_nil
     rescue
       $stderr.puts 'oops'
       raise
@@ -84,14 +91,20 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should retrieve checkout form result' do
+    checkout_form_initialize = Builder::CheckoutFormBuilder.new.create_checkout_form_initialize(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        token: 'token'
+        token: checkout_form_initialize['token']
     }
     checkout_form_payment = Iyzipay::Model::CheckoutForm.new.retrieve(request, @options)
     begin
-      $stderr.puts checkout_form_payment.inspect
+      $stdout.puts checkout_form_payment.inspect
+      expect(checkout_form_payment['status']).to eq('success')
+      expect(checkout_form_payment['locale']).to eq('tr')
+      expect(checkout_form_payment['systemTime']).not_to be_nil
+      expect(checkout_form_payment['token']).to eq(checkout_form_initialize['token'])
     rescue
       $stderr.puts 'oops'
       raise
