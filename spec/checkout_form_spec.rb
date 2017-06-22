@@ -5,12 +5,12 @@ require_relative 'spec_helper'
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
-  it 'should initialize checkout form' do
+  it 'should initialize checkout form for standard merchant' do
     buyer = {
         id: 'BY789',
         name: 'John',
@@ -65,7 +65,7 @@ RSpec.describe 'Iyzipay' do
         paidPrice: '1.2',
         currency: Iyzipay::Model::Currency::TRY,
         basketId: 'B67832',
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         callbackUrl: 'https://www.merchant.com/callback',
         enabledInstallments: [2, 3, 6, 9],
         buyer: buyer,
@@ -76,7 +76,7 @@ RSpec.describe 'Iyzipay' do
     checkout_form_initialize = Iyzipay::Model::CheckoutFormInitialize.new.create(request, @options)
 
     begin
-      $stderr.puts checkout_form_initialize.inspect
+      $stdout.puts checkout_form_initialize.inspect
     rescue
       $stderr.puts 'oops'
       raise
