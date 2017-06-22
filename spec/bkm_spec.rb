@@ -5,9 +5,9 @@ require_relative 'spec_helper'
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
   it 'should initialize bkm' do
@@ -63,7 +63,7 @@ RSpec.describe 'Iyzipay' do
         conversationId: '123456789',
         price: '1',
         basketId: 'B67832',
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         callbackUrl: 'https://www.merchant.com/callback',
         enabledInstallments: [2, 3, 6, 9],
         buyer: buyer,
@@ -74,11 +74,10 @@ RSpec.describe 'Iyzipay' do
     bkm_initialize = Iyzipay::Model::BkmInitialize.new.create(request, @options)
 
     begin
-      $stderr.puts bkm_initialize.inspect
-
       bkm_initialize_dict = JSON.parse(bkm_initialize)
+
       unless bkm_initialize_dict['htmlContent'].nil?
-        $stderr.puts Base64.decode64(bkm_initialize_dict['htmlContent']).inspect
+        expect(Base64.decode64(bkm_initialize_dict['htmlContent'])).not_to be_nil
       end
     rescue
       $stderr.puts 'oops'
@@ -86,20 +85,6 @@ RSpec.describe 'Iyzipay' do
     end
   end
 
-  it 'should retrieve bkm result' do
-    request = {
-        locale: Iyzipay::Model::Locale::TR,
-        conversationId: '123456789',
-        token: 'token'
-    }
-    bkm = Iyzipay::Model::Bkm.new.retrieve(request, @options)
-    begin
-      $stderr.puts bkm.inspect
-    rescue
-      $stderr.puts 'oops'
-      raise
-    end
-  end
 
   after :each do
   end

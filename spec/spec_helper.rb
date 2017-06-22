@@ -1,4 +1,5 @@
 require_relative '../lib/Iyzipay.rb'
+require_relative 'spec_options'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
