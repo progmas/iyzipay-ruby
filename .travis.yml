@@ -14,3 +14,4 @@ deploy:
     tags: true
     repo: iyzico/iyzipay-ruby
   skip_cleanup: true
+script: rspec spec
