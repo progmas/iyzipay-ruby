@@ -102,7 +102,7 @@ RSpec.describe 'Iyzipay' do
 
   it 'should create marketplace payment' do
     # create sub merchant
-    sub_merchant = Builder::SubMerchantBuilder.new.create_sub_merchant(@options)
+    sub_merchant = Builder::SubMerchantBuilder.new.create_personal_sub_merchant(@options)
 
     payment_card = {
         cardHolderName: 'John Doe',
@@ -203,8 +203,8 @@ RSpec.describe 'Iyzipay' do
     card = Builder::CardBuilder.new.create_card(@options)
 
     payment_card = {
-        cardUserKey: 'card user key',
-        cardToken: 'card token'
+        cardUserKey: card['cardUserKey'],
+        cardToken: card['cardToken']
     }
     buyer = {
         id: 'BY789',

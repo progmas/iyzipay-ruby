@@ -1,27 +1,39 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
   it 'should refund payment' do
+    # create payment
+    payment =  Builder::PaymentBuilder.new.create_standard_listing_payment(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        paymentTransactionId: '1',
-        price: '0.5',
+        paymentTransactionId: payment['itemTransactions'][0]['paymentTransactionId'],
+        price: '0.2',
         currency: Iyzipay::Model::Currency::TRY,
         ip: '85.34.78.112'
     }
     refund = Iyzipay::Model::Refund.new.create(request, @options)
     begin
-      $stderr.puts refund.inspect
+      $stdout.puts refund.inspect
+      refund = JSON.parse(refund)
+      expect(refund['status']).to eq('success')
+      expect(refund['locale']).to eq('tr')
+      expect(refund['systemTime']).not_to be_nil
+      expect(refund['conversationId']).to eq('123456789')
+      expect(refund['paymentId']).to eq(payment['paymentId'])
+      expect(refund['paymentTransactionId']).to eq(payment['itemTransactions'][0]['paymentTransactionId'])
+      expect(refund['price']).to eq(0.2)
     rescue
       $stderr.puts 'oops'
       raise

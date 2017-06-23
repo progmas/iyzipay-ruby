@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
@@ -11,15 +12,16 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create personal sub merchant' do
+    random_number = Random.rand(11**11).to_s
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantExternalId: 'B49224',
+        subMerchantExternalId: 'B' + random_number,
         subMerchantType: Iyzipay::Model::SubMerchantType::PERSONAL,
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         contactName: 'John',
         contactSurname: 'Doe',
-        email: 'email@submerchantemail.com',
+        email: random_number + '@email.com',
         gsmNumber: '+905350000000',
         name: 'John\'s market',
         iban: 'TR180006200119000006672315',
@@ -28,7 +30,12 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.create(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      $stdout.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -36,15 +43,16 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create private sub merchant' do
+    random_number = Random.rand(11**11).to_s
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantExternalId: 'S49222',
+        subMerchantExternalId: 'B' + random_number,
         subMerchantType: Iyzipay::Model::SubMerchantType::PRIVATE_COMPANY,
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         taxOffice: 'Tax office',
         legalCompanyTitle: 'John Doe inc',
-        email: 'email@submerchantemail.com',
+        email: random_number + '@email.com',
         gsmNumber: '+905350000000',
         name: 'John\'s market',
         iban: 'TR180006200119000006672315',
@@ -53,7 +61,11 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.create(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -61,10 +73,11 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create limited company sub merchant' do
+    random_number = Random.rand(11**11).to_s
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantExternalId: 'AS49224',
+        subMerchantExternalId: 'B' + random_number,
         subMerchantType: Iyzipay::Model::SubMerchantType::LIMITED_OR_JOINT_STOCK_COMPANY,
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         taxOffice: 'Tax office',
@@ -78,7 +91,11 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.create(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -86,11 +103,14 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should update personal sub merchant' do
+    # create personal sub merchant
+    sub_merchant = Builder::SubMerchantBuilder.new.create_personal_sub_merchant(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantExternalId: 'B49224',
-        subMerchantKey: 'sub merchant key',
+        subMerchantExternalId: sub_merchant['subMerchantExternalId'],
+        subMerchantKey: sub_merchant['subMerchantKey'],
         iban: 'TR180006200119000006672315',
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         contactName: 'Jane',
@@ -103,7 +123,12 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.update(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      $stdout.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -111,11 +136,14 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should update private sub merchant' do
+    # create private sub merchant
+    sub_merchant = Builder::SubMerchantBuilder.new.create_private_sub_merchant(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
         subMerchantExternalId: 'S49222',
-        subMerchantKey: 'sub merchant key',
+        subMerchantKey: sub_merchant['subMerchantKey'],
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         taxOffice: 'Tax office',
         legalCompanyTitle: 'Jane Doe inc',
@@ -128,7 +156,12 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.update(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      $stdout.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -136,10 +169,12 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should update limited company sub merchant' do
+    sub_merchant = Builder::SubMerchantBuilder.new.create_limited_sub_merchant(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantKey: 'sub merchant key',
+        subMerchantKey: sub_merchant['subMerchantKey'],
         address: 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
         taxOffice: 'Tax office',
         taxNumber: '9261877',
@@ -152,7 +187,12 @@ RSpec.describe 'Iyzipay' do
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.update(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      $stdout.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise
@@ -160,14 +200,22 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should retrieve sub merchant' do
+    random_number = Random.rand(11**11).to_s
+    Builder::SubMerchantBuilder.new.create_limited_sub_merchant_with_external_key(random_number, @options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        subMerchantExternalId: 'AS49224'
+        subMerchantExternalId: random_number
     }
     sub_merchant = Iyzipay::Model::SubMerchant.new.retrieve(request, @options)
     begin
-      $stderr.puts sub_merchant.inspect
+      $stdout.puts sub_merchant.inspect
+      sub_merchant = JSON.parse(sub_merchant)
+      expect(sub_merchant['status']).to eq('success')
+      expect(sub_merchant['locale']).to eq('tr')
+      expect(sub_merchant['systemTime']).not_to be_nil
+      expect(sub_merchant['conversationId']).to eq('123456789')
     rescue
       $stderr.puts 'oops'
       raise

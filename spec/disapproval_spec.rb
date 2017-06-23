@@ -13,7 +13,7 @@ RSpec.describe 'Iyzipay' do
 
   it 'should disapprove payment item' do
     # create sub merchant
-    sub_merchant = Builder::SubMerchantBuilder.new.create_sub_merchant(@options)
+    sub_merchant = Builder::SubMerchantBuilder.new.create_personal_sub_merchant(@options)
 
     # create payment
     payment = Builder::PaymentBuilder.new.create_marketplace_payment(@options, sub_merchant['subMerchantKey'])
