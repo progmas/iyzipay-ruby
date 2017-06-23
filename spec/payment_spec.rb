@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
@@ -10,7 +11,7 @@ RSpec.describe 'Iyzipay' do
     @options.base_url = SpecOptions::BASE_URL
   end
 
-  it 'should create payment' do
+  it 'should create listing payment' do
     payment_card = {
         cardHolderName: 'John Doe',
         cardNumber: '5528790000000008',
@@ -75,7 +76,7 @@ RSpec.describe 'Iyzipay' do
         installment: 1,
         basketId: 'B67832',
         paymentChannel: Iyzipay::Model::PaymentChannel::WEB,
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         paymentCard: payment_card,
         buyer: buyer,
         billingAddress: address,
@@ -84,7 +85,15 @@ RSpec.describe 'Iyzipay' do
     }
     payment = Iyzipay::Model::Payment.new.create(request, @options)
     begin
-      $stderr.puts payment.inspect
+      $stdout.puts payment.inspect
+      payment = JSON.parse(payment)
+      expect(payment['status']).to eq('success')
+      expect(payment['locale']).to eq('tr')
+      expect(payment['systemTime']).not_to be_nil
+      expect(payment['conversationId']).to eq('123456789')
+      expect(payment['price']).to eq(1)
+      expect(payment['paidPrice']).to eq(1.1)
+      expect(payment['installment']).to eq(1)
     rescue
       $stderr.puts 'oops'
       raise
@@ -92,6 +101,9 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create marketplace payment' do
+    # create sub merchant
+    sub_merchant = Builder::SubMerchantBuilder.new.create_sub_merchant(@options)
+
     payment_card = {
         cardHolderName: 'John Doe',
         cardNumber: '5528790000000008',
@@ -130,7 +142,7 @@ RSpec.describe 'Iyzipay' do
         category2: 'Accessories',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
         price: '0.3',
-        subMerchantKey: 'sub merchant key',
+        subMerchantKey: sub_merchant['subMerchantKey'],
         subMerchantPrice: '0.27'
     }
     item2 = {
@@ -140,7 +152,7 @@ RSpec.describe 'Iyzipay' do
         category2: 'Online Game Items',
         itemType: Iyzipay::Model::BasketItemType::VIRTUAL,
         price: '0.5',
-        subMerchantKey: 'sub merchant key',
+        subMerchantKey: sub_merchant['subMerchantKey'],
         subMerchantPrice: '0.42'
     }
     item3 = {
@@ -150,7 +162,7 @@ RSpec.describe 'Iyzipay' do
         category2: 'Usb / Cable',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
         price: '0.2',
-        subMerchantKey: 'sub merchant key',
+        subMerchantKey: sub_merchant['subMerchantKey'],
         subMerchantPrice: '0.18'
     }
     request = {
@@ -171,7 +183,15 @@ RSpec.describe 'Iyzipay' do
     }
     payment = Iyzipay::Model::Payment.new.create(request, @options)
     begin
-      $stderr.puts payment.inspect
+      $stdout.puts payment.inspect
+      payment = JSON.parse(payment)
+      expect(payment['status']).to eq('success')
+      expect(payment['locale']).to eq('tr')
+      expect(payment['systemTime']).not_to be_nil
+      expect(payment['conversationId']).to eq('123456789')
+      expect(payment['price']).to eq(1)
+      expect(payment['paidPrice']).to eq(1.1)
+      expect(payment['installment']).to eq(1)
     rescue
       $stderr.puts 'oops'
       raise
@@ -179,6 +199,9 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create payment with registered card' do
+    # create card
+    card = Builder::CardBuilder.new.create_card(@options)
+
     payment_card = {
         cardUserKey: 'card user key',
         cardToken: 'card token'
@@ -239,7 +262,7 @@ RSpec.describe 'Iyzipay' do
         installment: 1,
         basketId: 'B67832',
         paymentChannel: Iyzipay::Model::PaymentChannel::WEB,
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         paymentCard: payment_card,
         buyer: buyer,
         billingAddress: address,
@@ -248,23 +271,44 @@ RSpec.describe 'Iyzipay' do
     }
     payment = Iyzipay::Model::Payment.new.create(request, @options)
     begin
-      $stderr.puts payment.inspect
+      $stdout.puts payment.inspect
+      payment = JSON.parse(payment)
+      expect(payment['status']).to eq('success')
+      expect(payment['locale']).to eq('tr')
+      expect(payment['systemTime']).not_to be_nil
+      expect(payment['conversationId']).to eq('123456789')
+      expect(payment['price']).to eq(1)
+      expect(payment['paidPrice']).to eq(1.1)
+      expect(payment['installment']).to eq(1)
     rescue
       $stderr.puts 'oops'
       raise
     end
   end
 
-  it 'should retrieve payment result' do
+  it 'should retrieve payment' do
+    # create payment
+    payment = Builder::PaymentBuilder.new.create_standard_listing_payment(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        paymentId: '1',
+        paymentId: payment['paymentId'],
         paymentConversationId: '123456789'
     }
-    bkm = Iyzipay::Model::Payment.new.retrieve(request, @options)
+
+    retrieved_payment = Iyzipay::Model::Payment.new.retrieve(request, @options)
     begin
-      $stderr.puts bkm.inspect
+      $stdout.puts retrieved_payment.inspect
+      retrieved_payment = JSON.parse(retrieved_payment)
+      expect(retrieved_payment['status']).to eq('success')
+      expect(retrieved_payment['locale']).to eq('tr')
+      expect(retrieved_payment['systemTime']).not_to be_nil
+      expect(retrieved_payment['conversationId']).to eq('123456789')
+      expect(retrieved_payment['price']).to eq(1)
+      expect(retrieved_payment['paidPrice']).to eq(1.1)
+      expect(retrieved_payment['installment']).to eq(1)
+      expect(retrieved_payment['paymentId']).to eq(payment['paymentId'])
     rescue
       $stderr.puts 'oops'
       raise
