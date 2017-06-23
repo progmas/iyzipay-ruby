@@ -1,13 +1,14 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
   it 'should create payment with physical and virtual item for standard merchant' do
@@ -74,7 +75,7 @@ RSpec.describe 'Iyzipay' do
         installment: 1,
         paymentChannel: Iyzipay::Model::PaymentChannel::WEB,
         basketId: 'B67832',
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         callbackUrl: 'https://www.merchant.com/callback',
         currency: Iyzipay::Model::Currency::TRY,
         paymentCard: payment_card,
@@ -85,10 +86,13 @@ RSpec.describe 'Iyzipay' do
     }
     threeds_initialize = Iyzipay::Model::ThreedsInitialize.new.create(request, @options)
     begin
-      $stderr.puts threeds_initialize.inspect
+      $stdout.puts threeds_initialize.inspect
       threeds_initialize_dict = JSON.parse(threeds_initialize)
       unless threeds_initialize_dict['threeDSHtmlContent'].nil?
-        $stderr.puts Base64.decode64(threeds_initialize_dict['threeDSHtmlContent']).inspect
+        $stdout.puts Base64.decode64(threeds_initialize_dict['threeDSHtmlContent']).inspect
+        expect(threeds_initialize_dict['status']).to eq('success')
+        expect(threeds_initialize_dict['locale']).to eq('tr')
+        expect(threeds_initialize_dict['systemTime']).not_to be_nil
       end
     rescue
       $stderr.puts 'oops'
@@ -135,8 +139,6 @@ RSpec.describe 'Iyzipay' do
         category2: 'Accessories',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
         price: '0.3',
-        subMerchantKey: 'sub merchant key',
-        subMerchantPrice: '0.27'
     }
     item2 = {
         id: 'BI102',
@@ -145,8 +147,6 @@ RSpec.describe 'Iyzipay' do
         category2: 'Online Game Items',
         itemType: Iyzipay::Model::BasketItemType::VIRTUAL,
         price: '0.5',
-        subMerchantKey: 'sub merchant key',
-        subMerchantPrice: '0.42'
     }
     item3 = {
         id: 'BI103',
@@ -155,8 +155,6 @@ RSpec.describe 'Iyzipay' do
         category2: 'Usb / Cable',
         itemType: Iyzipay::Model::BasketItemType::PHYSICAL,
         price: '0.2',
-        subMerchantKey: 'sub merchant key',
-        subMerchantPrice: '0.18'
     }
     request = {
         locale: Iyzipay::Model::Locale::TR,
@@ -166,7 +164,7 @@ RSpec.describe 'Iyzipay' do
         installment: 1,
         paymentChannel: Iyzipay::Model::PaymentChannel::WEB,
         basketId: 'B67832',
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         callbackUrl: 'https://www.merchant.com/callback',
         currency: Iyzipay::Model::Currency::TRY,
         paymentCard: payment_card,
@@ -177,11 +175,14 @@ RSpec.describe 'Iyzipay' do
     }
     threeds_initialize = Iyzipay::Model::ThreedsInitialize.new.create(request, @options)
     begin
-      $stderr.puts threeds_initialize.inspect
+      $stdout.puts threeds_initialize.inspect
 
       threeds_initialize_dict = JSON.parse(threeds_initialize)
       unless threeds_initialize_dict['threeDSHtmlContent'].nil?
-        $stderr.puts Base64.decode64(threeds_initialize_dict['threeDSHtmlContent']).inspect
+        $stdout.puts Base64.decode64(threeds_initialize_dict['threeDSHtmlContent']).inspect
+        expect(threeds_initialize_dict['status']).to eq('success')
+        expect(threeds_initialize_dict['locale']).to eq('tr')
+        expect(threeds_initialize_dict['systemTime']).not_to be_nil
       end
     rescue
       $stderr.puts 'oops'
@@ -190,6 +191,7 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should auth threeds' do
+    # This test needs manual payment from Pecco on sandbox environment. So it does not contain any assertions.
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
@@ -198,14 +200,15 @@ RSpec.describe 'Iyzipay' do
     }
     threeds_payment = Iyzipay::Model::ThreedsPayment.new.create(request, @options)
     begin
-      $stderr.puts threeds_payment.inspect
+      $stdout.puts threeds_payment.inspect
     rescue
-      $stderr.puts 'oops'
+      $stdout.puts 'oops'
       raise
     end
   end
 
   it 'should retrieve payment' do
+    # This test needs manual payment from Pecco on sandbox environment. So it does not contain any assertions.
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
@@ -214,9 +217,9 @@ RSpec.describe 'Iyzipay' do
     }
     threeds_payment = Iyzipay::Model::ThreedsPayment.new.retrieve(request, @options)
     begin
-      $stderr.puts threeds_payment.inspect
+      $stdout.puts threeds_payment.inspect
     rescue
-      $stderr.puts 'oops'
+      $stdout.puts 'oops'
       raise
     end
   end

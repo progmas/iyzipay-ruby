@@ -1,13 +1,14 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
   it 'should initialize pecco' do
@@ -75,9 +76,14 @@ RSpec.describe 'Iyzipay' do
     pecco_initialize = Iyzipay::Model::PeccoInitialize.new.create(request, @options)
     begin
       $stderr.puts pecco_initialize.inspect
-      threeds_initialize_dict = JSON.parse(pecco_initialize)
-      unless threeds_initialize_dict['htmlContent'].nil?
-        $stderr.puts Base64.decode64(threeds_initialize_dict['htmlContent']).inspect
+      pecco_initialize = JSON.parse(pecco_initialize)
+      unless pecco_initialize['htmlContent'].nil?
+        $stdout.puts Base64.decode64(pecco_initialize['htmlContent']).inspect
+        expect(pecco_initialize['status']).to eq('success')
+        expect(pecco_initialize['locale']).to eq('tr')
+        expect(pecco_initialize['systemTime']).not_to be_nil
+        expect(pecco_initialize['conversationId']).to eq('123456789')
+        expect(pecco_initialize['htmlContent']).not_to be_nil
       end
     rescue
       $stderr.puts 'oops'
@@ -86,16 +92,21 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should create pecco payment' do
+
+    # This test needs manual payment from Pecco on sandbox environment. So it does not contain any assertions.
+    pecco_initialize = Builder::PeccoInitializeBuilder.new.create_pecco_initialize(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        token: 'token'
+        token: pecco_initialize['token']
     }
     pecco_payment = Iyzipay::Model::PeccoPayment.new.create(request, @options)
+
     begin
-      $stderr.puts pecco_payment.inspect
+      $stdout.puts pecco_payment.inspect
     rescue
-      $stderr.puts 'oops'
+      $stdout.puts 'oops'
       raise
     end
   end

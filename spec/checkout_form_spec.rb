@@ -1,16 +1,17 @@
 # coding: utf-8
 
 require_relative 'spec_helper'
+require_relative 'builder'
 
 RSpec.describe 'Iyzipay' do
   before :all do
     @options = Iyzipay::Options.new
-    @options.api_key = 'your api key'
-    @options.secret_key = 'your secret key'
-    @options.base_url = 'https://sandbox-api.iyzipay.com'
+    @options.api_key = SpecOptions::API_KEY
+    @options.secret_key = SpecOptions::SECRET_KEY
+    @options.base_url = SpecOptions::BASE_URL
   end
 
-  it 'should initialize checkout form' do
+  it 'should initialize checkout form for standard merchant' do
     buyer = {
         id: 'BY789',
         name: 'John',
@@ -65,7 +66,7 @@ RSpec.describe 'Iyzipay' do
         paidPrice: '1.2',
         currency: Iyzipay::Model::Currency::TRY,
         basketId: 'B67832',
-        paymentGroup: Iyzipay::Model::PaymentGroup::PRODUCT,
+        paymentGroup: Iyzipay::Model::PaymentGroup::LISTING,
         callbackUrl: 'https://www.merchant.com/callback',
         enabledInstallments: [2, 3, 6, 9],
         buyer: buyer,
@@ -76,7 +77,13 @@ RSpec.describe 'Iyzipay' do
     checkout_form_initialize = Iyzipay::Model::CheckoutFormInitialize.new.create(request, @options)
 
     begin
-      $stderr.puts checkout_form_initialize.inspect
+      $stdout.puts checkout_form_initialize.inspect
+      checkout_form_initialize = JSON.parse(checkout_form_initialize)
+      expect(checkout_form_initialize['status']).to eq('success')
+      expect(checkout_form_initialize['locale']).to eq('tr')
+      expect(checkout_form_initialize['systemTime']).not_to be_nil
+      expect(checkout_form_initialize['token']).not_to be_nil
+      expect(checkout_form_initialize['checkoutFormContent']).not_to be_nil
     rescue
       $stderr.puts 'oops'
       raise
@@ -84,14 +91,17 @@ RSpec.describe 'Iyzipay' do
   end
 
   it 'should retrieve checkout form result' do
+    # This test needs manual on sandbox environment. So it does not contain any assertions.
+    checkout_form_initialize = Builder::CheckoutFormBuilder.new.create_checkout_form_initialize(@options)
+
     request = {
         locale: Iyzipay::Model::Locale::TR,
         conversationId: '123456789',
-        token: 'token'
+        token: checkout_form_initialize['token']
     }
     checkout_form_payment = Iyzipay::Model::CheckoutForm.new.retrieve(request, @options)
     begin
-      $stderr.puts checkout_form_payment.inspect
+      $stdout.puts checkout_form_payment.inspect
     rescue
       $stderr.puts 'oops'
       raise
