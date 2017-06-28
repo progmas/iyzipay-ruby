@@ -1,4 +1,4 @@
-require_relative '../lib/Iyzipay.rb'
+require_relative '../lib/iyzipay.rb'
 require_relative 'spec_options'
 
 RSpec.configure do |config|
