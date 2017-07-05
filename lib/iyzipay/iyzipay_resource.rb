@@ -15,7 +15,7 @@ module Iyzipay
         random_header_value = random_string(RANDOM_STRING_SIZE)
         header[:'Authorization'] = "#{prepare_authorization_string(pki_string, random_header_value, options)}"
         header[:'x-iyzi-rnd'] = "#{random_header_value}"
-        header[:'x-iyzi-client-version'] = 'iyzipay-ruby-1.0.38'
+        header[:'x-iyzi-client-version'] = 'iyzipay-ruby-1.0.39'
       end
 
       header
